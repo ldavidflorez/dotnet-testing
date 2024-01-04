@@ -7,6 +7,13 @@ namespace MyApp.Namespace
     [ApiController]
     public class PeopleController : ControllerBase
     {
+        private IPeopleService _peopleService;
+
+        public PeopleController([FromKeyedServices("people2Service")] IPeopleService peopleService)
+        {
+            _peopleService = peopleService;
+        }
+
         [HttpGet]
         public List<Person> GetAll()
         {
@@ -36,7 +43,7 @@ namespace MyApp.Namespace
         [HttpPost]
         public IActionResult Add(Person person)
         {
-            if (string.IsNullOrEmpty(person.Name))
+            if (!_peopleService.Validate(person))
             {
                 return BadRequest();
             }
