@@ -38,8 +38,6 @@ namespace MyApp.Namespace
                 return "1";
             });
 
-            task1.Start();
-
             var task2 = new Task<string>(() =>
             {
                 Thread.Sleep(2000);
@@ -47,6 +45,7 @@ namespace MyApp.Namespace
                 return "2";
             });
 
+            task1.Start();
             task2.Start();
 
             var result1 = await task1;
@@ -56,12 +55,12 @@ namespace MyApp.Namespace
 
             stopwatch.Stop();
 
-            var response = new Dictionary<string, string>();
-            response.Add("task1", result1);
-            response.Add("task2", result2);
-            response.Add("totalTime", stopwatch.Elapsed.ToString());
-
-            return Ok(response);
+            return Ok(new
+            {
+                Task1Result = result1,
+                Task2Result = result2,
+                Time = stopwatch.Elapsed
+            });
         }
     }
 }
