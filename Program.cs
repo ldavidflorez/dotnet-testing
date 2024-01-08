@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using MyApp.Namespace;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,11 @@ builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddHttpClient<IPostService, PostService>(c => 
 {
     c.BaseAddress = new Uri(builder.Configuration["BaseUrlPost"]);
+});
+
+builder.Services.AddDbContext<StoreContex>(options =>
+{
+    options.UseMySQL(builder.Configuration.GetConnectionString("StoreConnection"));
 });
 
 builder.Services.AddControllers();

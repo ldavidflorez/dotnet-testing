@@ -12,7 +12,7 @@ namespace MyApp.Namespace
         }
 
         public async Task<PostDto> GetById(int id)
-        {
+        {   
             string url = $"{_httpClient.BaseAddress}/{id}";
             var result = await _httpClient.GetAsync(url);
             var body = await result.Content.ReadAsStringAsync();
@@ -29,7 +29,6 @@ namespace MyApp.Namespace
 
         public async Task<IEnumerable<PostDto>> GetAll()
         {
-            string url = $"https://jsonplaceholder.typicode.com/posts";
             var result = await _httpClient.GetAsync(_httpClient.BaseAddress);
             var body = await result.Content.ReadAsStringAsync();
 
