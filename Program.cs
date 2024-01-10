@@ -21,7 +21,7 @@ builder.Services.AddHttpClient<IPostService, PostService>(c =>
 
 builder.Services.AddDbContext<StoreContex>(options =>
 {
-    options.UseMySQL(builder.Configuration.GetConnectionString("StoreConnection"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("StoreConnection"));
 });
 
 builder.Services.AddControllers();

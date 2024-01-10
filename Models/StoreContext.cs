@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using MySql.Data.EntityFramework;
 
 namespace MyApp.Namespace
 {
