@@ -8,6 +8,6 @@ namespace MyApp.Namespace
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int BrandID { get; set; }
-        public string Name { get; set; }
+        public string? Name { get; set; }
     }
 }
