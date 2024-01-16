@@ -11,47 +11,31 @@ namespace MyApp.Namespace
         private StoreContex _context;
         private IValidator<BeerInsertDto> _beerInsertValidator;
         private IValidator<BeerUpdateDto> _beerUpdateValidator;
+        private IBeerService _beerService;
+
         public BeersController(StoreContex context,
             IValidator<BeerInsertDto> beerInsertValidator,
-            IValidator<BeerUpdateDto> beerUpdateValidator)
+            IValidator<BeerUpdateDto> beerUpdateValidator,
+            IBeerService beerService)
         {
             _context = context;
             _beerInsertValidator = beerInsertValidator;
             _beerUpdateValidator = beerUpdateValidator;
+            _beerService = beerService;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BeerDto>>> GetAll()
         {
-            var result = await _context.Beers.Select(b => new BeerDto
-            {
-                Id = b.BeerID,
-                Name = b.Name,
-                BrandID = b.BrandID,
-                Alcohol = b.Alcohol
-            }).ToListAsync();
-
+            var result = await _beerService.GetAll();
             return Ok(result);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<BeerDto>> GetById(int id)
         {
-            var beer = await _context.Beers.FindAsync(id);
-
-            if (beer == null)
-            {
-                return NotFound();
-            }
-
-            var beerDto = new BeerDto
-            {
-                Id = beer.BeerID,
-                Name = beer.Name,
-                BrandID = beer.BrandID,
-                Alcohol = beer.Alcohol
-            };
-            return Ok(beerDto);
+            var beerDto = await _beerService.GetById(id);
+            return beerDto == null ? NotFound() : Ok(beerDto);
         }
 
         [HttpPost]
@@ -120,19 +104,10 @@ namespace MyApp.Namespace
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult<BeerDto>> Delete(int id)
         {
-            var beer = await _context.Beers.FindAsync(id);
-
-            if (beer == null)
-            {
-                return NotFound();
-            }
-
-            _context.Beers.Remove(beer);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            var beerDto = await _beerService.Delete(id);
+            return beerDto == null ? NotFound() : Ok(beerDto);
         }
     }
 }
