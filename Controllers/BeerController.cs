@@ -39,7 +39,7 @@ namespace MyApp.Namespace
         }
 
         [HttpPost]
-        public async Task<ActionResult<BeerInsertDto>> Add(BeerInsertDto beerInsertDto)
+        public async Task<ActionResult<BeerDto>> Add(BeerInsertDto beerInsertDto)
         {
             var isValid = await _beerInsertValidator.ValidateAsync(beerInsertDto);
 
@@ -48,25 +48,9 @@ namespace MyApp.Namespace
                 return BadRequest(isValid.Errors);
             }
 
-            var beer = new Beer
-            {
-                Name = beerInsertDto.Name,
-                BrandID = beerInsertDto.BrandID,
-                Alcohol = beerInsertDto.Alcohol
-            };
+            var beerDto = await _beerService.Add(beerInsertDto);
 
-            await _context.Beers.AddAsync(beer);
-            await _context.SaveChangesAsync();
-
-            var beerDto = new BeerDto
-            {
-                Id = beer.BeerID,
-                Name = beer.Name,
-                BrandID = beer.BrandID,
-                Alcohol = beer.Alcohol
-            };
-
-            return CreatedAtAction(nameof(GetById), new { id = beer.BeerID }, beerDto);
+            return CreatedAtAction(nameof(GetById), new { id = beerDto.Id }, beerDto);
         }
 
         [HttpPut("{id}")]
@@ -79,28 +63,9 @@ namespace MyApp.Namespace
                 return BadRequest(isValid.Errors);
             }
 
-            var beer = await _context.Beers.FindAsync(id);
+            var beerDto = await _beerService.Update(id, beerUpdateDto);
 
-            if (beer == null)
-            {
-                return NotFound();
-            }
-
-            beer.Name = beerUpdateDto.Name;
-            beer.BrandID = beerUpdateDto.BrandID;
-            beer.Alcohol = beerUpdateDto.Alcohol;
-
-            await _context.SaveChangesAsync();
-
-            var beerDto = new BeerDto
-            {
-                Id = beer.BeerID,
-                Name = beer.Name,
-                BrandID = beer.BrandID,
-                Alcohol = beer.Alcohol
-            };
-
-            return Ok(beerDto);
+            return beerDto == null ? NotFound() : Ok(beerDto);
         }
 
         [HttpDelete("{id}")]

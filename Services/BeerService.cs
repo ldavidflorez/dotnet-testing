@@ -43,14 +43,53 @@ namespace MyApp.Namespace
             return beerDto;
         }
 
-        public async Task<BeerInsertDto> Add(BeerInsertDto beerInsertDto)
+        public async Task<BeerDto> Add(BeerInsertDto beerInsertDto)
         {
-            throw new NotImplementedException();
+            var beer = new Beer
+            {
+                Name = beerInsertDto.Name,
+                BrandID = beerInsertDto.BrandID,
+                Alcohol = beerInsertDto.Alcohol
+            };
+
+            await _context.Beers.AddAsync(beer);
+            await _context.SaveChangesAsync();
+
+            var beerDto = new BeerDto
+            {
+                Id = beer.BeerID,
+                Name = beer.Name,
+                BrandID = beer.BrandID,
+                Alcohol = beer.Alcohol
+            };
+
+            return beerDto;
         }
 
         public async Task<BeerDto> Update(int id, BeerUpdateDto beerUpdateDto)
         {
-            throw new NotImplementedException();
+            var beer = await _context.Beers.FindAsync(id);
+
+            if (beer == null)
+            {
+                return null;
+            }
+
+            beer.Name = beerUpdateDto.Name;
+            beer.BrandID = beerUpdateDto.BrandID;
+            beer.Alcohol = beerUpdateDto.Alcohol;
+
+            await _context.SaveChangesAsync();
+
+            var beerDto = new BeerDto
+            {
+                Id = beer.BeerID,
+                Name = beer.Name,
+                BrandID = beer.BrandID,
+                Alcohol = beer.Alcohol
+            };
+
+            return beerDto;
         }
 
         public async Task<BeerDto> Delete(int id)
@@ -62,9 +101,6 @@ namespace MyApp.Namespace
                 return null;
             }
 
-            _context.Beers.Remove(beer);
-            await _context.SaveChangesAsync();
-
             var beerDto = new BeerDto
             {
                 Id = beer.BeerID,
@@ -72,6 +108,9 @@ namespace MyApp.Namespace
                 BrandID = beer.BrandID,
                 Alcohol = beer.Alcohol
             };
+
+            _context.Beers.Remove(beer);
+            await _context.SaveChangesAsync();
 
             return beerDto;
         }
