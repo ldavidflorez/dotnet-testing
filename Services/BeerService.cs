@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MyApp.Namespace
 {
-    public class BeerService : IBeerService
+    public class BeerService : ICommonService<BeerDto, BeerInsertDto, BeerUpdateDto>
     {
         private StoreContex _context;
 
