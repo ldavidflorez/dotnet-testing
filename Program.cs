@@ -15,7 +15,7 @@ builder.Services.AddKeyedTransient<IRandomService, RandomService>("randomTransie
 
 builder.Services.AddScoped<IPostService, PostService>();
 
-builder.Services.AddHttpClient<IPostService, PostService>(c => 
+builder.Services.AddHttpClient<IPostService, PostService>(c =>
 {
     c.BaseAddress = new Uri(builder.Configuration["BaseUrlPost"]);
 });
@@ -30,6 +30,8 @@ builder.Services.AddScoped<IValidator<BeerUpdateDto>, BeerUpdateValidator>();
 
 // builder.Services.AddScoped<IBeerService, BeerService>();
 builder.Services.AddScoped<ICommonService<BeerDto, BeerInsertDto, BeerUpdateDto>, BeerService>();
+
+builder.Services.AddScoped<ICommonRepository<Beer>, BeerRepository>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
