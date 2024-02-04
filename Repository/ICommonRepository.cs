@@ -8,5 +8,7 @@ namespace MyApp.Namespace
         public void Update(TEntity entity);
         public void Delete(TEntity entity);
         public Task Save();
+
+        public IEnumerable<TEntity> Search(Func<TEntity, bool> filter);
     }
 }

@@ -10,7 +10,7 @@ namespace MyApp.Namespace
     {
         private IValidator<BeerInsertDto> _beerInsertValidator;
         private IValidator<BeerUpdateDto> _beerUpdateValidator;
-        private ICommonService<BeerDto, BeerInsertDto, BeerUpdateDto> _commonService;
+        private ICommonService<BeerDto, BeerInsertDto, BeerUpdateDto> _beerService;
 
         public BeerController(IValidator<BeerInsertDto> beerInsertValidator,
             IValidator<BeerUpdateDto> beerUpdateValidator,
@@ -18,20 +18,20 @@ namespace MyApp.Namespace
         {
             _beerInsertValidator = beerInsertValidator;
             _beerUpdateValidator = beerUpdateValidator;
-            _commonService = commonService;
+            _beerService = commonService;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BeerDto>>> GetAll()
         {
-            var result = await _commonService.GetAll();
+            var result = await _beerService.GetAll();
             return Ok(result);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<BeerDto>> GetById(int id)
         {
-            var beerDto = await _commonService.GetById(id);
+            var beerDto = await _beerService.GetById(id);
             return beerDto == null ? NotFound() : Ok(beerDto);
         }
 
@@ -45,7 +45,12 @@ namespace MyApp.Namespace
                 return BadRequest(isValid.Errors);
             }
 
-            var beerDto = await _commonService.Add(beerInsertDto);
+            if (!_beerService.Validate(beerInsertDto))
+            {
+                return BadRequest(_beerService.Errors);
+            }
+
+            var beerDto = await _beerService.Add(beerInsertDto);
 
             return CreatedAtAction(nameof(GetById), new { id = beerDto.Id }, beerDto);
         }
@@ -60,7 +65,12 @@ namespace MyApp.Namespace
                 return BadRequest(isValid.Errors);
             }
 
-            var beerDto = await _commonService.Update(id, beerUpdateDto);
+            if (!_beerService.Validate(beerUpdateDto))
+            {
+                return BadRequest(_beerService.Errors);
+            }
+            
+            var beerDto = await _beerService.Update(id, beerUpdateDto);
 
             return beerDto == null ? NotFound() : Ok(beerDto);
         }
@@ -68,7 +78,7 @@ namespace MyApp.Namespace
         [HttpDelete("{id}")]
         public async Task<ActionResult<BeerDto>> Delete(int id)
         {
-            var beerDto = await _commonService.Delete(id);
+            var beerDto = await _beerService.Delete(id);
             return beerDto == null ? NotFound() : Ok(beerDto);
         }
     }

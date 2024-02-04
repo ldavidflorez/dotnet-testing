@@ -6,12 +6,14 @@ namespace MyApp.Namespace
     {
         private ICommonRepository<Beer> _beerRepository;
         private IMapper _mapper;
+        public List<string> Errors { get; }
 
         public BeerService(ICommonRepository<Beer> beerRepository,
             IMapper mapper)
         {
             _beerRepository = beerRepository;
             _mapper = mapper;
+            Errors = new List<string>();
         }
 
         public async Task<IEnumerable<BeerDto>> GetAll()
@@ -54,7 +56,7 @@ namespace MyApp.Namespace
             {
                 return null;
             }
-            
+
             beer = _mapper.Map<BeerUpdateDto, Beer>(beerUpdateDto, beer);
 
             _beerRepository.Update(beer);
@@ -80,6 +82,27 @@ namespace MyApp.Namespace
             await _beerRepository.Save();
 
             return beerDto;
+        }
+
+        public bool Validate(BeerInsertDto beerInsertDto)
+        {
+            if (_beerRepository.Search(b => b.Name == beerInsertDto.Name).Count() > 0)
+            {
+                Errors.Add("The beer name already exists");
+                return false;
+            }
+            return true;
+        }
+
+        public bool Validate(BeerUpdateDto beerUpdateDto)
+        {
+            if (_beerRepository.Search(b => b.Name == beerUpdateDto.Name
+                && b.BeerID != beerUpdateDto.Id).Count() > 0)
+            {
+                Errors.Add("The beer name already exists");
+                return false;
+            }
+            return true;
         }
     }
 }
